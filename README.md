@@ -174,4 +174,10 @@ Sources/ChickenNeck/
 
 ---
 
+## Credits
+
+Inspired by [chandansgowda/posture-fix](https://github.com/chandansgowda/posture-fix), which does the same idea using the AirPods IMU. Chicken Neck reworks that concept for the webcam so it runs on any Mac without special earbuds. Thanks to that project for the spark.
+
+---
+
 Built by **Sumanth Raj Urs + Claude**.
