@@ -52,21 +52,14 @@ final class PostureCameraService: NSObject, ObservableObject {
     private var faceCleared = true        // latches the "no face" edge so we emit nil once
     private var lastProcessed = Date.distantPast
 
-    // The capture rate is *derived*, not picked: posture changes slowly, so we
-    // pin the camera to a constant `PostureDynamics.minUsableFPS` (clamped into
-    // the hardware's supported range), the cheapest rate that still samples fast
-    // enough not to alias real posture changes. See `capCameraFrameRate`.
-    //
-    // The hardware pin is the primary throttle, but it can silently fail to
-    // apply (config lock denied, empty supported ranges), so a software gate
-    // backstops it: never run face detection faster than the target rate, even
-    // if the camera ends up delivering at its native (e.g. 30 fps) rate. The
-    // small margin keeps legitimately spaced frames from being dropped on jitter.
+    // Software throttle backstopping the hardware frame-rate pin (see
+    // `capCameraFrameRate`), in case that pin fails to apply: never detect faster
+    // than the target rate. The 0.9 margin avoids dropping jittery-but-valid frames.
     private let minProcessInterval = 0.9 / PostureDynamics.minUsableFPS
 
-    // Session-health observers (D14). `shouldRun` mirrors the desired run state
-    // on `videoQueue` so recovery restarts can't resurrect a session the user
-    // stopped, and `restartAttempts` bounds the retry loop on permanent failure.
+    // Session-health observers (D14). `shouldRun` mirrors the desired run state on
+    // `videoQueue` so a recovery restart can't resurrect a session the user
+    // stopped; `restartAttempts` bounds the retry loop on permanent failure.
     private var observers: [NSObjectProtocol] = []
     private var shouldRun = false           // videoQueue only
     private var restartAttempts = 0         // videoQueue only
@@ -86,6 +79,9 @@ final class PostureCameraService: NSObject, ObservableObject {
         isAuthorized = AVCaptureDevice.authorizationStatus(for: .video) == .authorized
     }
 
+    private static let accessDeniedMessage =
+        "Camera access denied. Enable it in System Settings ▸ Privacy & Security ▸ Camera."
+
     func start() {
         guard !isRunning, !isStarting else { return }
         switch AVCaptureDevice.authorizationStatus(for: .video) {
@@ -102,13 +98,13 @@ final class PostureCameraService: NSObject, ObservableObject {
                         self.configureAndRun()
                     } else {
                         self.isStarting = false
-                        self.lastError = "Camera access denied. Enable it in System Settings ▸ Privacy & Security ▸ Camera."
+                        self.lastError = Self.accessDeniedMessage
                     }
                 }
             }
         default:
             refreshAuth()
-            lastError = "Camera access denied. Enable it in System Settings ▸ Privacy & Security ▸ Camera."
+            lastError = Self.accessDeniedMessage
         }
     }
 
@@ -197,11 +193,9 @@ final class PostureCameraService: NSObject, ObservableObject {
         observers.removeAll()
     }
 
-    /// Restart the capture session after a recoverable fault, on `videoQueue` so
-    /// it is totally ordered with start()/stop(). Guards on `shouldRun` so a
-    /// restart can't resurrect a session the user stopped, and caps attempts so
-    /// a permanently-unavailable camera (unplugged, driver crash) can't spin in a
-    /// tight error/restart loop. `restartAttempts` resets once frames flow again.
+    /// Restart after a recoverable fault, on `videoQueue` so it's ordered with
+    /// start()/stop(). `shouldRun` stops it resurrecting a session the user
+    /// stopped; the attempt cap stops a tight loop on a permanently-gone camera.
     private func attemptSessionRestart() {
         videoQueue.async { [weak self] in
             guard let self, self.shouldRun, !self.session.isRunning,
@@ -211,14 +205,12 @@ final class PostureCameraService: NSObject, ObservableObject {
         }
     }
 
-    /// Pin the capture to a constant `minUsableFPS`, clamped into the device's
-    /// supported range. Setting *both* the min and max frame duration fixes the
-    /// rate: the min-duration caps the ceiling (cheap on CPU/battery/heat) and
-    /// the max-duration enforces the floor, so the camera can't drift below the
-    /// rate the smoothing dynamics need (which would alias real posture changes)
-    /// under low light / auto-exposure. Clamping also keeps us safe: a duration
-    /// outside the supported range throws an Objective-C exception that Swift's
-    /// `try?` cannot catch (it aborts the app).
+    /// Pin the capture to a constant `minUsableFPS`, clamped into the supported
+    /// range. Setting *both* min and max frame duration fixes the rate: the min
+    /// caps the ceiling (cheap on CPU/heat), the max enforces the floor so the
+    /// camera can't drift below it in low light and alias posture changes.
+    /// Clamping is also load-bearing: an out-of-range duration throws an
+    /// uncatchable Objective-C exception that aborts the app.
     private func capCameraFrameRate(_ device: AVCaptureDevice) {
         guard (try? device.lockForConfiguration()) != nil else { return }
         defer { device.unlockForConfiguration() }

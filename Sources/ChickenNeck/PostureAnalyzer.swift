@@ -63,7 +63,7 @@ struct PostureVerdict {
 /// Threading: this type is **not** thread-safe. All public methods
 /// (`update`, `calibrate`, `reset`) must be called from the main thread, which
 /// is where `PostureCameraService` delivers readings. A precondition enforces
-/// this (it aborts in release too, so off-main calls fail loudly, not subtly).
+/// it (it fires in release too).
 final class PostureAnalyzer {
 
     // Tunables (set from settings).
@@ -173,23 +173,19 @@ final class PostureAnalyzer {
         dispatchPrecondition(condition: .onQueue(.main))
 
         guard let reading else {
-            // No face (the camera only sends this after ~1s away): keep the
-            // baselines and filter state, you may have only looked away, but
-            // stop reporting the last posture. A red verdict or an active alarm
-            // must not stick while you're away from the desk; both re-arm
-            // normally when you return still slouching.
+            // No face (sent only after ~1s away): keep baselines/filters in case
+            // you only glanced away, but clear the stale verdict and alarm so
+            // neither sticks while you're gone; both re-arm on return.
             alarm = false
             badSince = nil; goodSince = nil
             verdict = PostureVerdict(severity: .unknown)
             return verdict
         }
 
-        // Frame-rate-independent low-pass coefficient, capped below 1 so no
-        // single frame can fully define the smoothed state. After a gap (you
-        // looked away and came back) dt is large and an uncapped alpha would be
-        // ~1, letting one possibly-noisy re-acquisition frame set the verdict.
-        // On the genuine first frame the smoother snaps anyway, since there's no
-        // prior value to blend with, so the cap only bites on gaps/slow frames.
+        // Frame-rate-independent low-pass coefficient, capped below 1 so one
+        // frame can't fully define the state after a long gap (alpha would be
+        // ~1). The first frame snaps anyway (no prior value), so the cap only
+        // bites on gaps/slow frames.
         let dt = max(0, now.timeIntervalSince(lastUpdate))
         let alpha = min(0.5, 1 - exp(-dt / PostureDynamics.smoothingTau))
         lastUpdate = now
