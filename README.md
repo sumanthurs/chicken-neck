@@ -10,7 +10,9 @@ Everything runs **on-device** with Apple's Vision framework. **No video is ever 
 
 ## Why a webcam (and not earbuds)?
 
-The original idea was to read head-motion sensors from earbuds (the way AirPods expose them via `CMHeadphoneMotionManager`). But the **OnePlus Buds 4 have no motion sensor** (only the Buds Pro line ships an IMU), and macOS can't read non-Apple earbud sensors anyway. So Chicken Neck gets the same outcome a different way: it watches your head and neck through the Mac's camera. No special hardware, works with any Mac.
+I saw someone build a posture nudger using **AirPods**, which works because AirPods pack an **IMU** (motion sensor) that Apple exposes to apps via `CMHeadphoneMotionManager`. As an Android fan, I tried to recreate it with my **Samsung phone and OnePlus buds**, and it didn't work out: the **OnePlus Buds 4 have no motion sensor** at all (only the Buds Pro line ships an IMU), and even if they did, macOS can't read non-Apple earbud sensors.
+
+So I built it with the **webcam** by default instead. Chicken Neck gets the same outcome a different way: it watches your head and neck through the Mac's camera. No special earbuds, no IMU, works with any Mac.
 
 ---
 
