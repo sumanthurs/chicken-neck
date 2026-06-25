@@ -8,7 +8,7 @@ import UserNotifications
 /// We deliberately do NOT use SwiftUI's `MenuBarExtra`: a Window scene plus a
 /// MenuBarExtra whose label reads observable state (or uses `isInserted:`) sends
 /// SwiftUI's menu rebuild into an infinite 100%-CPU loop on macOS 26. Driving
-/// the status item imperatively here sidesteps that entirely — and lets the
+/// the status item imperatively here sidesteps that entirely, and lets the
 /// chicken change colour with your posture for free.
 final class AppDelegate: NSObject, NSApplicationDelegate {
 

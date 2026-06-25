@@ -54,7 +54,7 @@ struct MenuContentView: View {
             if state.isMonitoring && state.isCalibrated {
                 ProgressView(value: state.forwardFraction)
                     .tint(statusColor)
-                Text("Forward-head load — green ▸ orange ▸ red as you crane toward the screen")
+                Text("Forward-head load, green ▸ orange ▸ red as you crane toward the screen")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
             } else if state.isMonitoring {
@@ -221,7 +221,7 @@ struct MenuContentView: View {
     }
 
     private var historyChart: HistoryChart {
-        HistoryChart(title: "\(historyRange.rawValue) — good vs. slouch (min)", buckets: buckets)
+        HistoryChart(title: "\(historyRange.rawValue), good vs. slouch (min)", buckets: buckets)
     }
 
     private var historyBody: some View {
@@ -238,7 +238,7 @@ struct MenuContentView: View {
             .labelsHidden()
 
             if totalAll < 1 {
-                Text("No history yet — finish a session to see your trends.")
+                Text("No history yet, finish a session to see your trends.")
                     .font(.caption).foregroundStyle(.secondary)
             } else {
                 Text(String(format: "%@ overall: %.0f%% good · %.0f min tracked",
@@ -304,7 +304,7 @@ struct MenuContentView: View {
 
             if showWellness {
                 VStack(alignment: .leading, spacing: 10) {
-                    Text("These fire whenever the app is open — no monitoring or calibration needed.")
+                    Text("These fire whenever the app is open, no monitoring or calibration needed.")
                         .font(.caption2).foregroundStyle(.secondary)
                     Toggle("Coop breaks (stand & stretch)", isOn: $state.breakRemindersOn)
                     if state.breakRemindersOn {
@@ -340,7 +340,7 @@ struct MenuContentView: View {
             Toggle("Sound cue", isOn: $state.soundEnabled)
             Toggle("Spoken cue", isOn: $state.voiceEnabled)
             Toggle("On-screen popup alerts", isOn: $state.popupAlertsOn)
-                .help("Chicken Neck draws its own banner — works without notification permission.")
+                .help("Chicken Neck draws its own banner, works without notification permission.")
             if state.popupAlertsOn {
                 sliderRow(title: "Popup stays for", value: $state.popupSeconds, range: 2...15, suffix: "s")
             }

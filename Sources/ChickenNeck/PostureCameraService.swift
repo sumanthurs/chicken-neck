@@ -12,8 +12,8 @@ struct PostureReading {
     var centerY: Double    // face vertical position, 0…1 (drops as you slump down)
 }
 
-/// Watches you through the Mac camera with Apple's Vision framework — fully
-/// on-device, nothing recorded or sent — and reports head/neck geometry every
+/// Watches you through the Mac camera with Apple's Vision framework, fully
+/// on-device, nothing recorded or sent, and reports head/neck geometry every
 /// frame. All the clinical interpretation happens in `PostureAnalyzer`.
 final class PostureCameraService: NSObject, ObservableObject {
 
@@ -93,7 +93,7 @@ final class PostureCameraService: NSObject, ObservableObject {
             let input = try AVCaptureDeviceInput(device: device)
             if session.canAddInput(input) { session.addInput(input) }
             // Cap the camera to ~15 fps so the system isn't handing us (then
-            // discarding) 30 fps buffers — a big CPU/heat saving.
+            // discarding) 30 fps buffers, a big CPU/heat saving.
             if (try? device.lockForConfiguration()) != nil {
                 device.activeVideoMinFrameDuration = CMTime(value: 1, timescale: 15)
                 device.unlockForConfiguration()

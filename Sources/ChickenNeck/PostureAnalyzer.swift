@@ -1,11 +1,11 @@
 import Foundation
 
-/// Overall posture severity — the green / orange / red traffic light.
+/// Overall posture severity, the green / orange / red traffic light.
 enum PostureSeverity {
     case unknown    // not calibrated / no face
     case good       // green
-    case mild       // orange — drifting
-    case severe     // red — sustained forward head, time to act
+    case mild       // orange, drifting
+    case severe     // red, sustained forward head, time to act
 }
 
 /// Which axis is the worst offender right now (drives the funny copy + arrows).
@@ -48,7 +48,7 @@ final class PostureAnalyzer {
 
     var forwardSevere: Double { forwardMild * 2 }
 
-    // Forward-load weights — how each cue folds into one "forward head" number.
+    // Forward-load weights, how each cue folds into one "forward head" number.
     private let dropW = 100.0    // face sliding down the frame
     private let leanW = 150.0    // face growing = craning toward the screen
     private let pitchW = 0.5     // head tilting down (per degree)
@@ -95,7 +95,7 @@ final class PostureAnalyzer {
     @discardableResult
     func update(reading: PostureReading?, now: Date = Date()) -> PostureVerdict {
         guard let reading else {
-            // Don't reset baselines — you may just have looked away briefly.
+            // Don't reset baselines, you may just have looked away briefly.
             return verdict
         }
 

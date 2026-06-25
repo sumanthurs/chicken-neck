@@ -3,7 +3,7 @@ import Charts
 import AppKit
 import UniformTypeIdentifiers
 
-/// Reusable bar chart for a set of history buckets — used both on screen and
+/// Reusable bar chart for a set of history buckets, used both on screen and
 /// when exporting a graph image.
 struct HistoryChart: View {
     let title: String

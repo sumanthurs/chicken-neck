@@ -3,7 +3,7 @@ import SwiftUI
 
 /// A self-drawn floating banner near the top of the screen. Used instead of
 /// relying on macOS Notification Center, which is unreliable for locally-built
-/// (ad-hoc signed) apps — this needs no permission and always shows.
+/// (ad-hoc signed) apps, this needs no permission and always shows.
 @MainActor
 final class PopupAlert {
     static let shared = PopupAlert()

@@ -1,11 +1,11 @@
 import AppKit
 
-/// Draws the Chicken Neck mascot — a little chicken head — entirely in code so
+/// Draws the Chicken Neck mascot, a little chicken head, entirely in code so
 /// the app ships no image assets. Used both for the live menu-bar status icon
 /// (tinted green/orange/red to signal posture) and the app icon.
 enum ChickenIcon {
 
-    /// Constant monochrome chicken for the menu bar — a template image so macOS
+    /// Constant monochrome chicken for the menu bar, a template image so macOS
     /// tints it to match the bar (like the other status icons). MUST be a stable
     /// instance and the label MUST NOT read observable state, or SwiftUI's menu
     /// rebuild loops forever when a Window scene is also present.
@@ -18,7 +18,7 @@ enum ChickenIcon {
         return img
     }()
 
-    /// Cache so the same colour returns the *same* NSImage instance — otherwise
+    /// Cache so the same colour returns the *same* NSImage instance, otherwise
     /// SwiftUI sees a "new" menu-bar label every render pass and loops forever.
     private static var menuBarCache: [String: NSImage] = [:]
 

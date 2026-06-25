@@ -296,7 +296,7 @@ final class AppState: ObservableObject {
         }
     }
 
-    // MARK: 1 Hz ticker — sit-time, breaks, lunch, posture-time stats
+    // MARK: 1 Hz ticker, sit-time, breaks, lunch, posture-time stats
 
     private func startTicker() {
         ticker?.invalidate()
@@ -441,7 +441,7 @@ final class AppState: ObservableObject {
 
     private var mildHeadline: String {
         switch issue {
-        case .tiltLeft, .tiltRight: return "Head-cock — level up 🐤"
+        case .tiltLeft, .tiltRight: return "Head-cock, level up 🐤"
         case .rotated:              return "Craning sideways 🐔"
         case .tooClose:             return "Easing toward the screen"
         default:                    return "Drifting forward…"

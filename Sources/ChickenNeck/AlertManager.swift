@@ -59,7 +59,7 @@ final class AlertManager {
         case .forward, .none:
             if severe {
                 title = "FULL CHICKEN PECK! 🐔🚨"
-                body  = "Sit up straight — neck straight, chin tucked, head back over your shoulders. Now!"
+                body  = "Sit up straight, neck straight, chin tucked, head back over your shoulders. Now!"
                 spoken = "Sit up straight. Keep your neck straight."
             } else {
                 title = "Easy there, hen 🐔"
@@ -98,7 +98,7 @@ final class AlertManager {
 
     func triggerHydration() {
         fire(title: "Drink some water 💧",
-             body: "Time for a sip of water — stay hydrated.",
+             body: "Time for a sip of water, stay hydrated.",
              spoken: "Time to drink some water.")
     }
 
@@ -129,7 +129,7 @@ final class AlertManager {
             u.rate = 0.5
             synth.speak(u)
         }
-        // Our own on-screen banner — reliable without notification permission.
+        // Our own on-screen banner, reliable without notification permission.
         if popupEnabled {
             let seconds = popupSeconds
             DispatchQueue.main.async { PopupAlert.shared.show(title: title, message: body, duration: seconds) }

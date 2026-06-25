@@ -86,7 +86,7 @@ let week = NSImage(size: NSSize(width: W, height: H), flipped: false) { _ in
     }
     let attrs: [NSAttributedString.Key: Any] = [.foregroundColor: NSColor(white: 0.7, alpha: 1),
                                                 .font: NSFont.systemFont(ofSize: 18, weight: .medium)]
-    ("Weekly history — good (green) vs slouch (red), minutes" as NSString).draw(at: NSPoint(x: pad, y: H - 34), withAttributes: attrs)
+    ("Weekly history, good (green) vs slouch (red), minutes" as NSString).draw(at: NSPoint(x: pad, y: H - 34), withAttributes: attrs)
     return true
 }
 write(week, "weekly-chart.png", Int(W))
