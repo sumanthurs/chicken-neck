@@ -83,12 +83,21 @@ final class PostureCameraService: NSObject, ObservableObject {
         isAvailable = true
 
         session.beginConfiguration()
-        session.sessionPreset = .vga640x480   // plenty for face geometry, light on CPU
+        // Low resolution is plenty for face geometry and far cheaper on CPU/battery.
+        for preset in [AVCaptureSession.Preset.cif352x288, .low, .vga640x480] {
+            if session.canSetSessionPreset(preset) { session.sessionPreset = preset; break }
+        }
 
         session.inputs.forEach { session.removeInput($0) }
         do {
             let input = try AVCaptureDeviceInput(device: device)
             if session.canAddInput(input) { session.addInput(input) }
+            // Cap the camera to ~15 fps so the system isn't handing us (then
+            // discarding) 30 fps buffers — a big CPU/heat saving.
+            if (try? device.lockForConfiguration()) != nil {
+                device.activeVideoMinFrameDuration = CMTime(value: 1, timescale: 15)
+                device.unlockForConfiguration()
+            }
         } catch {
             session.commitConfiguration()
             lastError = error.localizedDescription
